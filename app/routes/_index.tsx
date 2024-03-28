@@ -1,41 +1,37 @@
 import type { MetaFunction } from "@remix-run/node";
+import { useEffect } from "react";
+// upstash.com
+import Redis from "ioredis"
+
+const client = new Redis("rediss://default:e37c5efc9d424fa0bb1eef1a6e7d9dbd@apn1-renewing-silkworm-33848.upstash.io:33848");
+// await client.set('foo', 'bar');
+// await client.set('foo1', 'bbbb');
+// await client.set('foo2', JSON.stringify({
+//   name: 'vkb',
+//   info: {
+//     gender: 'male',
+//     age: 121
+//   }
+// }));
+
+const x = await client.get('foo2');
+console.log('x', x)
+
+
 
 export const meta: MetaFunction = () => {
   return [
-    { title: "New Remix App" },
-    { name: "description", content: "Welcome to Remix!" },
+    { title: "Screen Resolution Collection" },
   ];
 };
 
 export default function Index() {
+
+  useEffect(() => {
+    const { width, height } = window.screen;
+    console.log('xx', { width, height })
+  }, []);
   return (
-    <div style={{ fontFamily: "system-ui, sans-serif", lineHeight: "1.8" }}>
-      <h1>Welcome to Remix</h1>
-      <ul>
-        <li>
-          <a
-            target="_blank"
-            href="https://remix.run/tutorials/blog"
-            rel="noreferrer"
-          >
-            15m Quickstart Blog Tutorial
-          </a>
-        </li>
-        <li>
-          <a
-            target="_blank"
-            href="https://remix.run/tutorials/jokes"
-            rel="noreferrer"
-          >
-            Deep Dive Jokes App Tutorial
-          </a>
-        </li>
-        <li>
-          <a target="_blank" href="https://remix.run/docs" rel="noreferrer">
-            Remix Docs
-          </a>
-        </li>
-      </ul>
-    </div>
+    <div>111</div>
   );
 }
