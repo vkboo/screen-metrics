@@ -1,23 +1,14 @@
-import type { MetaFunction } from "@remix-run/node";
+import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
+import { useFetcher, useLoaderData } from "@remix-run/react";
 import { useEffect } from "react";
-// upstash.com
-import Redis from "ioredis"
+import { v4 as uuidv4 } from 'uuid';
 
-const client = new Redis("rediss://default:e37c5efc9d424fa0bb1eef1a6e7d9dbd@apn1-renewing-silkworm-33848.upstash.io:33848");
-// await client.set('foo', 'bar');
-// await client.set('foo1', 'bbbb');
-// await client.set('foo2', JSON.stringify({
-//   name: 'vkb',
-//   info: {
-//     gender: 'male',
-//     age: 121
-//   }
-// }));
-
-const x = await client.get('foo2');
-console.log('x', x)
-
-
+export const loader = async (c: LoaderFunctionArgs) => {
+  const AGENT_UUID_KEY = process.env.AGENT_UUID_KEY as string;
+  return {
+    AGENT_UUID_KEY
+  }
+}
 
 export const meta: MetaFunction = () => {
   return [
@@ -26,12 +17,32 @@ export const meta: MetaFunction = () => {
 };
 
 export default function Index() {
+  const { AGENT_UUID_KEY } = useLoaderData<{
+    AGENT_UUID_KEY: string
+  }>();
+  const fetcher = useFetcher();
+  const insertAgentUUID = () => {
+    let localUUID = localStorage.getItem(AGENT_UUID_KEY);
+    if (!localUUID) {
+      localUUID = uuidv4();
+      localStorage.setItem(AGENT_UUID_KEY, localUUID);
+    }
+    return localUUID;
+  }
 
   useEffect(() => {
+    const uuid = insertAgentUUID();
     const { width, height } = window.screen;
-    console.log('xx', { width, height })
+    const formData = new FormData();
+    formData.append('uuid', uuid);
+    formData.append('screen_size_auto_measure', `${width} x ${height}`);
+    fetcher.submit(formData, { method: 'POST', action: '/post' })
   }, []);
   return (
-    <div>111</div>
+    <div>
+      <button onClick={() => {
+        fetcher.submit({ a: 1 }, { method: 'POST', action: '/post' })
+      }}>xxx</button>
+    </div>
   );
 }
