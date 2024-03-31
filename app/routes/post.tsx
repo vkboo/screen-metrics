@@ -8,10 +8,12 @@ type Item = {
     // screen_size_input: string;
     // is_confirm_by_user: boolean;
     // country: string;
+    country: string;
     platform: object;
 }
 
 const REDIS_TABLE_KEY = process.env.REDIS_TABLE_KEY as string;
+
 
 const getAllList = async () => {
     const tableStr = await redisClient.get(REDIS_TABLE_KEY);
@@ -37,6 +39,7 @@ const update = async (list: Item[], id: string, item: Item) => {
     redisClient.set(REDIS_TABLE_KEY, JSON.stringify(newList));
 };
 
+
 export const action = async (c: ActionFunctionArgs) => {
     const formData = await c.request.formData();
     const list = await getAllList();
@@ -44,7 +47,8 @@ export const action = async (c: ActionFunctionArgs) => {
     const json = {
         id,
         screen_size_auto_measure: formData.get('screen_size_auto_measure') as string,
-        platform: JSON.parse(formData.get('platform') as string)
+        country: formData.get('country') as string,
+        platform: JSON.parse(formData.get('platform') as string),
     };
     if (list.findIndex(e => e['id'] === id) > -1) {
         await update(list, id, json);
