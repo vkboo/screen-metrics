@@ -36,7 +36,7 @@ export default function Index() {
     const { width, height } = window.screen;
     const formData = new FormData();
     formData.append('uuid', uuid);
-    formData.append('screen_size_auto_measure', `${width} x ${height}0`);
+    formData.append('screen_size_auto_measure', `${width} x ${height}`);
     formData.append('platform', JSON.stringify(platform));
     fetcher.submit(formData, { method: 'POST', action: '/post' })
   }, []);
