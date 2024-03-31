@@ -2,6 +2,7 @@ import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import { useFetcher, useLoaderData } from "@remix-run/react";
 import { useEffect } from "react";
 import { v4 as uuidv4 } from 'uuid';
+import platform from 'platform';
 
 export const loader = async (c: LoaderFunctionArgs) => {
   const AGENT_UUID_KEY = process.env.AGENT_UUID_KEY as string;
@@ -35,14 +36,13 @@ export default function Index() {
     const { width, height } = window.screen;
     const formData = new FormData();
     formData.append('uuid', uuid);
-    formData.append('screen_size_auto_measure', `${width} x ${height}`);
+    formData.append('screen_size_auto_measure', `${width} x ${height}0`);
+    formData.append('platform', JSON.stringify(platform));
     fetcher.submit(formData, { method: 'POST', action: '/post' })
   }, []);
   return (
     <div>
-      <button onClick={() => {
-        fetcher.submit({ a: 1 }, { method: 'POST', action: '/post' })
-      }}>xxx</button>
+      auto measure screen collection
     </div>
   );
 }
