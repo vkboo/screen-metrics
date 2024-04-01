@@ -1,13 +1,19 @@
+"use client";
+
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import { getClientIPAddress } from "remix-utils/get-client-ip-address";
 import { useFetcher, useLoaderData } from "@remix-run/react";
-import { useEffect } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { v4 as uuidv4 } from 'uuid';
 import platform from 'platform';
+import redisClient from '~/redis';
 
 export const loader = async (c: LoaderFunctionArgs) => {
   const AGENT_UUID_KEY = process.env.AGENT_UUID_KEY as string;
   const ipAddressApiUrl = 'http://ip-api.com/json';
+  const REDIS_TABLE_KEY = process.env.REDIS_TABLE_KEY as string;
+  const tableStr = await redisClient.get(REDIS_TABLE_KEY);
+  const table = (tableStr ? JSON.parse(tableStr) : []) as Item[];
 
   const ipAddressFromRequest = getClientIPAddress(c.request);
   const ipAddressFromHeaders = getClientIPAddress(c.request.headers);
@@ -23,6 +29,7 @@ export const loader = async (c: LoaderFunctionArgs) => {
   return {
     AGENT_UUID_KEY,
     country,
+    table,
   }
 }
 
@@ -33,10 +40,15 @@ export const meta: MetaFunction = () => {
 };
 
 export default function Index() {
-  const { AGENT_UUID_KEY, country } = useLoaderData<{
+
+  const { AGENT_UUID_KEY, country, table } = useLoaderData<{
     AGENT_UUID_KEY: string;
     country: string;
+    table: Item[],
   }>();
+
+  const [id, setId] = useState<string | null>();
+
   const fetcher = useFetcher();
   const insertAgentUUID = () => {
     let localUUID = localStorage.getItem(AGENT_UUID_KEY);
@@ -46,6 +58,16 @@ export default function Index() {
     }
     return localUUID;
   }
+
+  const data = useMemo(() => {
+    return table.find((item) => item.id === id);
+  }, [table, id])
+
+  console.log('>>data', data)
+
+  useEffect(() => {
+    setId(localStorage.getItem(AGENT_UUID_KEY));
+  }, []);
 
   useEffect(() => {
     const uuid = insertAgentUUID();
@@ -59,7 +81,9 @@ export default function Index() {
   }, []);
   return (
     <div>
-      auto measure screen collection
+      {data ? (
+        <div>当前系统info {JSON.stringify(data)}</div>
+      ): 'no data'}
     </div>
   );
 }
