@@ -36,28 +36,29 @@ const update = async (list: Item[], id: string, item: Omit<Item, 'create_at'>) =
 };
 
 export const loader = async (c: LoaderFunctionArgs) => {
-  const AGENT_UUID_KEY = process.env.AGENT_UUID_KEY as string;
-  const ipAddressApiUrl = 'http://ip-api.com/json';
-  const REDIS_TABLE_KEY = process.env.REDIS_TABLE_KEY as string;
-  const tableStr = await redisClient.get(REDIS_TABLE_KEY);
-  const table = (tableStr ? JSON.parse(tableStr) : []) as Item[];
+  return { table: [] };
+  // const AGENT_UUID_KEY = process.env.AGENT_UUID_KEY as string;
+  // const ipAddressApiUrl = 'http://ip-api.com/json';
+  // const REDIS_TABLE_KEY = process.env.REDIS_TABLE_KEY as string;
+  // const tableStr = await redisClient.get(REDIS_TABLE_KEY);
+  // const table = (tableStr ? JSON.parse(tableStr) : []) as Item[];
 
-  const ipAddressFromRequest = getClientIPAddress(c.request);
-  const ipAddressFromHeaders = getClientIPAddress(c.request.headers);
-  const ipAddress = ipAddressFromRequest ?? ipAddressFromHeaders;
+  // const ipAddressFromRequest = getClientIPAddress(c.request);
+  // const ipAddressFromHeaders = getClientIPAddress(c.request.headers);
+  // const ipAddress = ipAddressFromRequest ?? ipAddressFromHeaders;
 
-  let country = null;
-  if (ipAddressFromHeaders) {
-    const response = await fetch(`${ipAddressApiUrl}/${ipAddress}`);
-    const data = await response.json();
-    country = data.country;
-  }
+  // let country = null;
+  // if (ipAddressFromHeaders) {
+  //   const response = await fetch(`${ipAddressApiUrl}/${ipAddress}`);
+  //   const data = await response.json();
+  //   country = data.country;
+  // }
 
-  return {
-    AGENT_UUID_KEY,
-    country,
-    table,
-  }
+  // return {
+  //   AGENT_UUID_KEY,
+  //   country,
+  //   table,
+  // }
 }
 
 export const action = async (c: ActionFunctionArgs) => {
