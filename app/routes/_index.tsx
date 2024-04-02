@@ -63,8 +63,6 @@ export default function Index() {
     return table.find((item) => item.id === id);
   }, [table, id])
 
-  console.log('>>data', data)
-
   useEffect(() => {
     setId(localStorage.getItem(AGENT_UUID_KEY));
   }, []);
@@ -80,10 +78,24 @@ export default function Index() {
     fetcher.submit(formData, { method: 'POST', action: '/post' })
   }, []);
   return (
-    <div>
-      {data ? (
-        <div>当前系统info {JSON.stringify(data)}</div>
-      ): 'no data'}
+    <div className="space-y-4">
+      <div>
+        <span>分辨率(Auto detect): </span>
+        <span>{'1920 * 1080'}</span>
+      </div>
+      <div>
+        <span>分辨率(用户填写): </span>
+        <span>{'1920 * 1080'}</span>
+      </div>
+      <div>
+        <span>国家: </span>
+        <span>{'越南'}</span>
+      </div>
+      <div>
+        <span>操作系统: </span>
+        <span>{'OSX 15.4'}</span>
+      </div>
+
     </div>
   );
 }
