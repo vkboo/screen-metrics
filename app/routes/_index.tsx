@@ -7,6 +7,7 @@ import { useEffect, useState, useMemo } from "react";
 import { v4 as uuidv4 } from 'uuid';
 import platform from 'platform';
 import redisClient from '~/redis';
+import { Button, Card, Label, TextInput, ToggleSwitch } from "flowbite-react";
 
 export const loader = async (c: LoaderFunctionArgs) => {
   const AGENT_UUID_KEY = process.env.AGENT_UUID_KEY as string;
@@ -47,6 +48,7 @@ export default function Index() {
     table: Item[],
   }>();
 
+  const [switch1, setSwitch1] = useState<boolean>(true);
   const [id, setId] = useState<string | null>();
 
   const fetcher = useFetcher();
@@ -78,24 +80,55 @@ export default function Index() {
     fetcher.submit(formData, { method: 'POST', action: '/post' })
   }, []);
   return (
-    <div className="space-y-4">
-      <div>
-        <span>分辨率(Auto detect): </span>
-        <span>{'1920 * 1080'}</span>
-      </div>
-      <div>
-        <span>分辨率(用户填写): </span>
-        <span>{'1920 * 1080'}</span>
-      </div>
-      <div>
-        <span>国家: </span>
-        <span>{'越南'}</span>
-      </div>
-      <div>
-        <span>操作系统: </span>
-        <span>{'OSX 15.4'}</span>
-      </div>
+    <div className="flex flex-col items-center">
+      <div className="space-y-4 container flex flex-col p-4 max-w-[56rem]">
+        <Card>
+          <div>
+            <span className="text-gray-600">分辨率(Auto detect): </span>
+            <span>{'1920 * 1080'}</span>
+          </div>
+          <div>
+            <span className="text-gray-600">分辨率(用户填写): </span>
+            <span>{'1920 * 1080'}</span>
+          </div>
+          <div>
+            <span className="text-gray-600">国家: </span>
+            <span>{'越南'}</span>
+          </div>
+          <div>
+            <span className="text-gray-600">操作系统: </span>
+            <span>{'OSX 15.4'}</span>
+          </div>
+        </Card>
 
+        <Card>
+          <form className="flex max-w-md flex-col gap-4">
+            <div>
+              <div className="mb-2 block">
+                <Label htmlFor="email1" value="Your email" />
+              </div>
+              <TextInput id="email1" type="email" placeholder="example@iglooinsure.com" required />
+            </div>
+            <div>
+              <div className="mb-2 block">
+                <Label htmlFor="password1" value="系统auth detect的分辨率准确" />
+              </div>
+              <ToggleSwitch checked={switch1} label="准确无误" onChange={setSwitch1} />
+            </div>
+            {!switch1 && (
+              <div>
+                <div className="mb-2 block">
+                  <Label htmlFor="email1" value="设备分辨率" />
+                </div>
+                <TextInput id="screen_by_user" placeholder="input your devices' screen ratio" />
+              </div>
+            )}
+            <Button type="submit">Submit</Button>
+          </form>
+
+        </Card>
+
+      </div>
     </div>
   );
 }
