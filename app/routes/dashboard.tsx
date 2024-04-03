@@ -66,7 +66,7 @@ export default function Dashboard() {
                     content={
                         <div className="flex w-64 flex-col gap-4 p-4 text-sm text-gray-500 dark:text-gray-400">
                             <div>
-                                <h2 className="text-base text-gray-500">分辨率</h2>
+                                <h2 className="text-base text-gray-500">Screen Resolution</h2>
                                 <Select
                                     value={filter.screen_size_auto_measure[0]}
                                     onChange={e => {

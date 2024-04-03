@@ -109,32 +109,33 @@ export default function Index() {
           )}
           {displays.email && (
             <h5 className="text-2xl">
+              The device associated with &nbsp;
               <b className="tracking-tight text-gray-900">
                 {displays.email}
               </b>
-              的此设备已经提过相关信息，如下:
+              &nbsp; has already provided relevant information, as follows:
             </h5>
           )}
           <div>
-            <span className="text-gray-600">分辨率(Auto detect): </span>
+            <span className="text-gray-600">Screen Resolution(Auto detect): </span>
             <Badge color="purple" className="inline-block">
               {displays?.screenSizeAutoMeasure || '-'}
             </Badge>
           </div>
           {displays.screenSizeInput && (
             <div>
-              <span className="text-gray-600">分辨率(用户填写): </span>
+              <span className="text-gray-600">Screen Resolution(用户填写): </span>
               <Badge color="pink" className="inline-block">
                 {displays.screenSizeInput}
               </Badge>
             </div>
           )}
           <div>
-            <span className="text-gray-600">国家/地区: </span>
+            <span className="text-gray-600">Country/Region: </span>
             <span>{displays.country || '-'}</span>
           </div>
           <div>
-            <span className="text-gray-600">操作系统: </span>
+            <span className="text-gray-600">Operation System: </span>
             <span>{displays.platform || '-'}</span>
           </div>
           <div>
@@ -169,16 +170,16 @@ export default function Index() {
             </div>
             <div>
               <div className="mb-2 block">
-                <Label htmlFor="password1" value="系统auth detect的分辨率准确" />
+                <Label htmlFor="password1" value="Is the screen resolution detected by the system accurate?" />
               </div>
-              <ToggleSwitch name="is_confirm_by_user" checked={confirmed} label="准确无误" onChange={setConfirmed} />
+              <ToggleSwitch name="is_confirm_by_user" checked={confirmed} label="Absolutely accurate" onChange={setConfirmed} />
             </div>
             {!confirmed && (
               <div>
                 <div className="mb-2 block">
-                  <Label htmlFor="screen_size_input" value="设备分辨率" />
+                  <Label htmlFor="screen_size_input" value="Device Screen Resolution" />
                 </div>
-                <TextInput name="screen_size_input" id="screen_size_input" placeholder="input your devices' screen ratio" />
+                <TextInput name="screen_size_input" id="screen_size_input" placeholder="Input your device's screen ratio" />
               </div>
             )}
             <input hidden name="uuid" defaultValue={id!} />
