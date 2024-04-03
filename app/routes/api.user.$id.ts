@@ -1,7 +1,7 @@
 
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import { loader as loaderGetAllUsers } from "./users.get";
+import { loader as users } from "./api.users";
 import redisClient from '~/redis';
 
 const REDIS_TABLE_KEY = process.env.REDIS_TABLE_KEY as string;
@@ -10,10 +10,9 @@ const insertToDb = (list: (Omit<Item, 'create_at'> & {
 })[]) => redisClient.set(REDIS_TABLE_KEY, JSON.stringify(list))
 
 export const loader = async (c: LoaderFunctionArgs) => {
-    const response = await loaderGetAllUsers(c);
-    const list = await response.json();
+    const list = await users(c);
     const target = list.find(e => e.id === c.params.id);
-    return json(target);
+    return target ?? null;
 };
 
 export const action = async (c: ActionFunctionArgs) => {
@@ -27,11 +26,10 @@ export const action = async (c: ActionFunctionArgs) => {
         screen_size_input: formData.get('screen_size_input') as string,
         is_confirm_by_user: formData.get('is_confirm_by_user') === 'on',
         country: formData.get('country') as string,
-        platform: JSON.parse(formData.get('platform') as string),
+        platform: formData.get('platform') as string,
         update_at: (new Date()).getTime(),
     };
-    const response = await loaderGetAllUsers(c);
-    const list = await response.json();
+    const list = await users(c);
     switch (method) {
         case 'POST': {
             Object.assign(data, {

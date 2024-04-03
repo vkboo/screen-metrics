@@ -3,7 +3,7 @@ import { useLoaderData } from "@remix-run/react";
 import { Table, Pagination, Button, Popover, Label, TextInput, Select } from "flowbite-react";
 import { FaFilter } from "react-icons/fa";
 import { useState } from 'react';
-import { loader as users } from "./users";
+import { loader as users } from "./api.users";
 
 
 export const loader = async (c: LoaderFunctionArgs) => {
@@ -18,7 +18,8 @@ export default function Dashboard() {
     const onPageChange = (page: number) => setCurrentPage(page);
     return <div className="p-4">
         <div className="overflow-x-autos">
-            <div className="flex justify-end">
+            <div className="flex items-center justify-between">
+                <h4 className="font-semibold dark:text-white">total 23 entities</h4>
                 <Popover
                     open={open}
                     onOpenChange={setOpen}
@@ -106,9 +107,6 @@ export default function Dashboard() {
                     </Table.Row>
                 </Table.Body>
             </Table>
-            <div className="flex justify-end mt-4">
-                <h4 className="mt-2">total 23 entities</h4>
-            </div>
         </div>
     </div>
 };
