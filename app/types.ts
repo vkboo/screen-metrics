@@ -7,5 +7,5 @@ type Item = {
     screen_size_input: string;
     is_confirm_by_user: boolean;
     country: string;
-    platform: object;
+    platform: string;
 }
