@@ -5,9 +5,7 @@ import { loader as users } from "./api.users";
 import redisClient from '~/redis';
 
 const REDIS_TABLE_KEY = process.env.REDIS_TABLE_KEY as string;
-const insertToDb = (list: (Omit<Item, 'create_at'> & {
-    create_at?: number;
-})[]) => redisClient.set(REDIS_TABLE_KEY, JSON.stringify(list))
+const insertToDb = (list: Item[]) => redisClient.set(REDIS_TABLE_KEY, JSON.stringify(list))
 
 export const loader = async (c: LoaderFunctionArgs) => {
     const list = await users(c);
@@ -28,13 +26,11 @@ export const action = async (c: ActionFunctionArgs) => {
         country: formData.get('country') as string,
         platform: formData.get('platform') as string,
         update_at: (new Date()).getTime(),
+        create_at: Number(formData.get('create_at')) || (new Date()).getTime(),
     };
     const list = await users(c);
     switch (method) {
         case 'POST': {
-            Object.assign(data, {
-                create_at: (new Date()).getTime(),
-            });
             const newList = [...list];
             newList.push(data as Item);
             insertToDb(newList);

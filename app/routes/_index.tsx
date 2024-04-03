@@ -1,7 +1,7 @@
 "use client";
 
 import { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
-import { useLoaderData, useFetcher } from "@remix-run/react";
+import { useLoaderData, useFetcher, ShouldRevalidateFunction } from "@remix-run/react";
 import { useEffect, useState, useMemo } from "react";
 import { v4 as uuidv4 } from 'uuid';
 import dayjs from 'dayjs';
@@ -14,6 +14,10 @@ export const meta: MetaFunction = () => {
   return [
     { title: "Screen Resolution Collection" },
   ];
+};
+
+export const shouldRevalidate: ShouldRevalidateFunction = () => {
+  return false;
 };
 
 export const loader = async (c: LoaderFunctionArgs) => {
@@ -69,10 +73,17 @@ function useScreenSize() {
 export default function Index() {
   const [confirmed, setConfirmed] = useState<boolean>(true);
   const [formVisible, setFormVisible] = useState<boolean>(false);
-  const userFetcher = useFetcher();
+  const userFetcher = useFetcher<any>();
+  const isSubmitted = userFetcher.state === 'idle' && userFetcher.data && !userFetcher.data?.error;
   const { AGENT_UUID_KEY, country } = useLoaderData<typeof loader>();
   const screenSizeAutoMeasure = useScreenSize();
   const { id, user } = useUserInfo(AGENT_UUID_KEY);
+
+  useEffect(() => {
+    if (isSubmitted) {
+      setFormVisible(false);
+    }
+  }, [isSubmitted]);
 
   const displays = useMemo(
     () => ({
@@ -96,8 +107,11 @@ export default function Index() {
             </Badge>
           )}
           {displays.email && (
-            <h5 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-              {`${displays.email} 的此设备已经提过相关信息，如下: `}
+            <h5 className="text-2xl">
+              <b className="tracking-tight text-gray-900">
+                {displays.email}
+              </b>
+              的此设备已经提过相关信息，如下:
             </h5>
           )}
           <div>
@@ -122,7 +136,7 @@ export default function Index() {
             <span className="text-gray-600">操作系统: </span>
             <span>{displays.platform || '-'}</span>
           </div>
-          {!formVisible && user && (
+          {(!formVisible && user) && (
             <Button
               className="max-w-md"
               type="button"
@@ -166,6 +180,7 @@ export default function Index() {
             <input hidden name="screen_size_auto_measure" defaultValue={screenSizeAutoMeasure!} />
             <input hidden name="country" defaultValue={country!} />
             <input hidden name="platform" defaultValue={platform?.os?.toString()} />
+            <input hidden name="create_at" defaultValue={user?.create_at} />
 
             <Button type="submit" isProcessing={userFetcher.state === 'submitting'}>Submit</Button>
           </userFetcher.Form>
