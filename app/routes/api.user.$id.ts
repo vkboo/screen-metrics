@@ -25,6 +25,7 @@ export const action = async (c: ActionFunctionArgs) => {
         is_confirm_by_user: formData.get('is_confirm_by_user') === 'on',
         country: formData.get('country') as string,
         platform: formData.get('platform') as string,
+        browser: formData.get('browser') as string,
         update_at: (new Date()).getTime(),
         create_at: Number(formData.get('create_at')) || (new Date()).getTime(),
     };

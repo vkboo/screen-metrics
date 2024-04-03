@@ -8,4 +8,5 @@ type Item = {
     is_confirm_by_user: boolean;
     country: string;
     platform: string;
+    browser: string;
 }
