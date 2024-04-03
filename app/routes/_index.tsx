@@ -92,6 +92,7 @@ export default function Index() {
       screenSizeInput: user?.screen_size_input,
       country: user?.country ?? country,
       platform: user?.platform ?? platform?.os?.toString(),
+      browser: user?.browser ?? `${platform?.name} ${platform?.version}`,
       updateAt: user?.update_at ? dayjs(user?.update_at).format('YYYY-MM-DD HH:mm:ss') : null,
     }),
     [user, screenSizeAutoMeasure, country, platform]
@@ -135,6 +136,10 @@ export default function Index() {
           <div>
             <span className="text-gray-600">操作系统: </span>
             <span>{displays.platform || '-'}</span>
+          </div>
+          <div>
+            <span className="text-gray-600">Browser: </span>
+            <span>{displays.browser || '-'}</span>
           </div>
           {(!formVisible && user) && (
             <Button
@@ -180,6 +185,7 @@ export default function Index() {
             <input hidden name="screen_size_auto_measure" defaultValue={screenSizeAutoMeasure!} />
             <input hidden name="country" defaultValue={country!} />
             <input hidden name="platform" defaultValue={platform?.os?.toString()} />
+            <input hidden name="browser" defaultValue={`${platform?.name} ${platform?.version}`} />
             <input hidden name="create_at" defaultValue={user?.create_at} />
 
             <Button type="submit" isProcessing={userFetcher.state === 'submitting'}>Submit</Button>

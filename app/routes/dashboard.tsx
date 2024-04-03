@@ -1,10 +1,10 @@
 import { LoaderFunctionArgs } from "@remix-run/node"
 import { useLoaderData } from "@remix-run/react";
-import { Table, Pagination, Button, Popover, Label, TextInput, Select } from "flowbite-react";
+import dayjs from 'dayjs';
+import { Table, Button, Popover, TextInput, Select, Badge } from "flowbite-react";
 import { FaFilter } from "react-icons/fa";
 import { useState } from 'react';
 import { loader as users } from "./api.users";
-
 
 export const loader = async (c: LoaderFunctionArgs) => {
     const table = await users(c);
@@ -13,13 +13,13 @@ export const loader = async (c: LoaderFunctionArgs) => {
 
 export default function Dashboard() {
     const table = useLoaderData<typeof loader>();
-    const [currentPage, setCurrentPage] = useState<number>(1);
     const [open, setOpen] = useState(false);
-    const onPageChange = (page: number) => setCurrentPage(page);
     return <div className="p-4">
         <div className="overflow-x-autos">
             <div className="flex items-center justify-between">
-                <h4 className="font-semibold dark:text-white">total 23 entities</h4>
+                <h4 className="font-semibold dark:text-white">
+                    total {table.length} entities
+                </h4>
                 <Popover
                     open={open}
                     onOpenChange={setOpen}
@@ -59,52 +59,52 @@ export default function Dashboard() {
             </div>
             <Table hoverable className="mt-2">
                 <Table.Head>
-                    <Table.HeadCell>Product name</Table.HeadCell>
-                    <Table.HeadCell>Color</Table.HeadCell>
-                    <Table.HeadCell>Category</Table.HeadCell>
-                    <Table.HeadCell>Price</Table.HeadCell>
-                    <Table.HeadCell>
-                        <span className="sr-only">Edit</span>
-                    </Table.HeadCell>
+                    <Table.HeadCell>id</Table.HeadCell>
+                    <Table.HeadCell>Email</Table.HeadCell>
+                    <Table.HeadCell>Screen Resolution(auto detect)</Table.HeadCell>
+                    <Table.HeadCell>Screen Resolution(user input)</Table.HeadCell>
+                    <Table.HeadCell>Platform</Table.HeadCell>
+                    <Table.HeadCell>Browser</Table.HeadCell>
+                    <Table.HeadCell>Created Date</Table.HeadCell>
+                    <Table.HeadCell>Updated Date</Table.HeadCell>
                 </Table.Head>
                 <Table.Body className="divide-y">
-                    <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
-                        <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
-                            {'Apple MacBook Pro 17"'}
-                        </Table.Cell>
-                        <Table.Cell>Sliver</Table.Cell>
-                        <Table.Cell>Laptop</Table.Cell>
-                        <Table.Cell>$2999</Table.Cell>
-                        <Table.Cell>
-                            <a href="#" className="font-medium text-cyan-600 hover:underline dark:text-cyan-500">
-                                Edit
-                            </a>
-                        </Table.Cell>
-                    </Table.Row>
-                    <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
-                        <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
-                            Microsoft Surface Pro
-                        </Table.Cell>
-                        <Table.Cell>White</Table.Cell>
-                        <Table.Cell>Laptop PC</Table.Cell>
-                        <Table.Cell>$1999</Table.Cell>
-                        <Table.Cell>
-                            <a href="#" className="font-medium text-cyan-600 hover:underline dark:text-cyan-500">
-                                Edit
-                            </a>
-                        </Table.Cell>
-                    </Table.Row>
-                    <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
-                        <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">Magic Mouse 2</Table.Cell>
-                        <Table.Cell>Black</Table.Cell>
-                        <Table.Cell>Accessories</Table.Cell>
-                        <Table.Cell>$99</Table.Cell>
-                        <Table.Cell>
-                            <a href="#" className="font-medium text-cyan-600 hover:underline dark:text-cyan-500">
-                                Edit
-                            </a>
-                        </Table.Cell>
-                    </Table.Row>
+                    {table.map(row => {
+                        return (
+                            <Table.Row key={row.id} className="bg-white dark:border-gray-700 dark:bg-gray-800">
+                                <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+                                    {row.id}
+                                </Table.Cell>
+                                <Table.Cell>
+                                    {row.email}
+                                </Table.Cell>
+                                <Table.Cell>
+                                    <Badge color="purple" className="inline-block">
+                                        {row.screen_size_auto_measure}
+                                    </Badge>
+                                </Table.Cell>
+                                <Table.Cell>
+                                    {row.screen_size_input ? (
+                                        <Badge color="pink" className="inline-block">
+                                            {row.screen_size_input}
+                                        </Badge>
+                                    ) : '-'}
+                                </Table.Cell>
+                                <Table.Cell>
+                                    {row.platform}
+                                </Table.Cell>
+                                <Table.Cell>
+                                    {row.browser}
+                                </Table.Cell>
+                                <Table.Cell>
+                                    {dayjs(row.create_at).format('YYYY-MM-DD HH:mm:ss')}
+                                </Table.Cell>
+                                <Table.Cell>
+                                    {dayjs(row.update_at).format('YYYY-MM-DD HH:mm:ss')}
+                                </Table.Cell>
+                            </Table.Row>
+                        );
+                    })}
                 </Table.Body>
             </Table>
         </div>
