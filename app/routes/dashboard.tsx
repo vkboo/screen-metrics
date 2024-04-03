@@ -19,6 +19,10 @@ export const shouldRevalidate: ShouldRevalidateFunction = () => {
 export default function Dashboard() {
     const allTable = useLoaderData<typeof loader>();
     const [open, setOpen] = useState(false);
+    const screenResolutionList = useMemo(() => {
+        const list = allTable.map(e => e.screen_size_auto_measure);
+        return [...new Set(list)];
+    }, [allTable]);
     const [filter, setFilter] = useState<{
         email: string;
         screen_size_auto_measure: string[];
@@ -75,8 +79,11 @@ export default function Dashboard() {
                                     }}
                                 >
                                     <option value="all">All</option>
-                                    <option value="1920 * 1080">1920 * 1080</option>
-                                    <option value="1280 * 760">1280 * 760</option>
+                                    {screenResolutionList.map(e => (
+                                        <option value={e}>
+                                            {e}
+                                        </option>
+                                    ))}
                                 </Select>
                             </div>
                             <div>
