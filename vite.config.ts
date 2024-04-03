@@ -8,7 +8,7 @@ installGlobals();
 export default defineConfig({
   plugins: [
     remix({
-      serverModuleFormat: "cjs",
+      serverModuleFormat: "esm",
     }),
     tsconfigPaths(),
   ],
