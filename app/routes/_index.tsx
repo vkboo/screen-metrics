@@ -1,13 +1,15 @@
 "use client";
 
-import type { LoaderFunctionArgs, MetaFunction, ActionFunctionArgs } from "@remix-run/node";
+import { LoaderFunctionArgs, MetaFunction, ActionFunctionArgs } from "@remix-run/node";
 import { getClientIPAddress } from "remix-utils/get-client-ip-address";
-import { useLoaderData, Form } from "@remix-run/react";
+import { useLoaderData, Form, redirect, useFetcher } from "@remix-run/react";
 import { useEffect, useState, useMemo } from "react";
 import { v4 as uuidv4 } from 'uuid';
 import platform from 'platform';
 import redisClient from '~/redis';
 import { Button, Card, Label, TextInput, ToggleSwitch } from "flowbite-react";
+import { loader as loaderUserId } from "./user.$id";
+import { loader as loaderGetAllUsers } from "./users.get";
 
 const REDIS_TABLE_KEY = process.env.REDIS_TABLE_KEY as string;
 
@@ -43,9 +45,21 @@ export const loader = async (c: LoaderFunctionArgs) => {
   // const tableStr = await redisClient.get(REDIS_TABLE_KEY);
   // const table = (tableStr ? JSON.parse(tableStr) : []) as Item[];
 
-  // const ipAddressFromRequest = getClientIPAddress(c.request);
-  // const ipAddressFromHeaders = getClientIPAddress(c.request.headers);
-  // const ipAddress = ipAddressFromRequest ?? ipAddressFromHeaders;
+  const ipAddressFromRequest = getClientIPAddress(c.request);
+  const ipAddressFromHeaders = getClientIPAddress(c.request.headers);
+  const ipAddress = ipAddressFromRequest ?? ipAddressFromHeaders;
+  // const __redirect = redirect;
+  // debugger
+  // const response = await redirect('http://localhost:5173/user/766e8c65-6387-4e3c-ae1f-502fcdc215fa/get', 200);
+
+
+
+  const _response2 = await loaderUserId({
+    ...c, params: {
+      id: '766e8c65-6387-4e3c-ae1f-502fcdc215fa',
+    }
+  });
+  const _data2 = await _response2.json();
 
   // let country = null;
   // if (ipAddressFromHeaders) {
@@ -61,31 +75,6 @@ export const loader = async (c: LoaderFunctionArgs) => {
   // }
 }
 
-export const action = async (c: ActionFunctionArgs) => {
-  const formData = await c.request.formData();
-  const list = await getAllList();
-  const id = formData.get('uuid') as string;
-  const json = {
-    id,
-    email: formData.get('email') as string,
-    screen_size_auto_measure: formData.get('screen_size_auto_measure') as string,
-    screen_size_input: formData.get('screen_size_input') as string,
-    is_confirm_by_user: formData.get('is_confirm_by_user') === 'on',
-    country: formData.get('country') as string,
-    platform: JSON.parse(formData.get('platform') as string),
-    update_at: (new Date()).getTime(),
-  };
-  if (list.findIndex(e => e['id'] === id) > -1) {
-    await update(list, id, json);
-  } else {
-    Object.assign(json, {
-      create_at: (new Date()).getTime(),
-    });
-    await insert(list, json as Item);
-  }
-  return { success: true, json: json };
-};
-
 export const meta: MetaFunction = () => {
   return [
     { title: "Screen Resolution Collection" },
@@ -93,7 +82,7 @@ export const meta: MetaFunction = () => {
 };
 
 export default function Index() {
-
+  const fetcher = useFetcher();
   const { AGENT_UUID_KEY, country, table } = useLoaderData<{
     AGENT_UUID_KEY: string;
     country: string;
@@ -162,7 +151,7 @@ export default function Index() {
         </Card>
 
         <Card>
-          <Form className="flex max-w-md flex-col gap-4" method="POST">
+          <fetcher.Form className="flex max-w-md flex-col gap-4" method="POST" action={`/user/${id}`}>
             <div>
               <div className="mb-2 block">
                 <Label htmlFor="email" value="Your email" />
@@ -189,7 +178,7 @@ export default function Index() {
             <input hidden name="platform" defaultValue={platform ? JSON.stringify(platform) : '{}'} />
 
             <Button type="submit">Submit</Button>
-          </Form>
+          </fetcher.Form>
 
         </Card>
 
