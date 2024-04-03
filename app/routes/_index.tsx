@@ -124,7 +124,7 @@ export default function Index() {
           </div>
           {displays.screenSizeInput && (
             <div>
-              <span className="text-gray-600">Screen Resolution(用户填写): </span>
+              <span className="text-gray-600">Screen Resolution(Input by user): </span>
               <Badge color="pink" className="inline-block">
                 {displays.screenSizeInput}
               </Badge>
